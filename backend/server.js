@@ -91,40 +91,34 @@ async function ensureSettings() {
     console.error("❌ Error in ensureSettings:", err);
   }
 }
-
 /* ========================
    INITIALIZATION & START SERVER
 ======================== */
-// استدعاء الاتصال بقاعدة البيانات مباشرة ليتم حفظ الاتصال وتجاوب السيرفر بسرعة
+const PORT = process.env.PORT || 5001;
+
 connectDB()
   .then(async () => {
     await ensureSettings();
     await adminController.createAdmin();
     
-    // ملاحظة: الـ Cron لن يعمل بشكل مستمر على Vercel، ولكن نتركه هنا للتشغيل المحلي (Local)
-    if (process.env.NODE_ENV !== 'production') {
-      cronService.start();
-    }
+    // تشغيل الـ Cron Service (ستعمل الآن 24/7 بنجاح على Render!)
+    cronService.start();
+
+    // تشغيل السيرفر لفتح المنفذ (إلزامي لـ Render والـ Local)
+    app.listen(PORT, () => {
+      console.log(`\n💈 Fadila Barber Server Running on port ${PORT}`);
+    });
   })
   .catch((err) => {
     console.error('❌ Failed to connect to DB during initialization:', err);
   });
-
-// تشغيل الـ listen فقط إذا كنا نعمل محلياً (Local Development)
-// Vercel يتكفل بتشغيل الـ app تلقائياً دون الحاجة لأمر listen ثابت
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 5001;
-  app.listen(PORT, () => {
-    console.log(`\n💈 Fadila Barber Server Running on port ${PORT}`);
-  });
-}
 
 /* ========================
    GRACEFUL SHUTDOWN
 ======================== */
 process.on('SIGINT', () => {
   console.log('\nShutting down...');
-  if (process.env.NODE_ENV !== 'production') cronService.stop();
+  cronService.stop();
   process.exit(0);
 });
 
