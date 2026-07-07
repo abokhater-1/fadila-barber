@@ -8,18 +8,17 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const galleryRoutes = require('./routes/galleryRoutes');
-const settingsRoutes = require('./routes/settingsRoutes'); // ✅ חדש
+const settingsRoutes = require('./routes/settingsRoutes'); 
 
 const adminController = require('./controllers/adminController');
 const cronService = require('./services/cronService');
-const BusinessSettings = require('./models/BusinessSettings'); // ✅ חדש
+const BusinessSettings = require('./models/BusinessSettings'); 
 
 const app = express();
 
 /* ========================
    MIDDLEWARE
 ======================== */
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,17 +32,15 @@ app.use((req, res, next) => {
 /* ========================
    ROUTES
 ======================== */
-
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/gallery', galleryRoutes);
-app.use('/api/settings', settingsRoutes); // ✅ חדש
+app.use('/api/settings', settingsRoutes); 
 
 /* ========================
    HEALTH CHECK
 ======================== */
-
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -55,7 +52,6 @@ app.get('/api/health', (req, res) => {
 /* ========================
    ERROR HANDLING
 ======================== */
-
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -67,73 +63,70 @@ app.use((err, req, res, next) => {
   console.error('Server Error:', err);
   res.status(500).json({
     success: false,
-    error: process.env.NODE_ENV === 'development'
-      ? err.message
-      : 'Internal Server Error'
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
   });
 });
 
 /* ========================
    DEFAULT SETTINGS CREATION
 ======================== */
-
 async function ensureSettings() {
-  const exists = await BusinessSettings.findOne();
-
-  if (!exists) {
-    await BusinessSettings.create({
-  workingHours: {
-    sunday:    { start:"09:00", end:"19:00", breaks:[], enabled:true },
-    monday:    { start:"09:00", end:"19:00", breaks:[], enabled:true },
-    tuesday:   { start:"09:00", end:"19:00", breaks:[], enabled:true },
-    wednesday: { start:"09:00", end:"19:00", breaks:[], enabled:true },
-    thursday:  { start:"09:00", end:"19:00", breaks:[], enabled:true },
-    friday:    { start:"09:00", end:"14:00", breaks:[], enabled:true },
-    saturday:  { start:"09:00", end:"14:00", breaks:[], enabled:true }
-  }
-});
-
-    console.log("✅ Default business settings created");
+  try {
+    const exists = await BusinessSettings.findOne();
+    if (!exists) {
+      await BusinessSettings.create({
+        workingHours: {
+          sunday:    { start:"09:00", end:"19:00", breaks:[], enabled:true },
+          monday:    { start:"09:00", end:"19:00", breaks:[], enabled:true },
+          tuesday:   { start:"09:00", end:"19:00", breaks:[], enabled:true },
+          wednesday: { start:"09:00", end:"19:00", breaks:[], enabled:true },
+          thursday:  { start:"09:00", end:"19:00", breaks:[], enabled:true },
+          friday:    { start:"09:00", end:"14:00", breaks:[], enabled:true },
+          saturday:  { start:"09:00", end:"14:00", breaks:[], enabled:true }
+        }
+      });
+      console.log("✅ Default business settings created");
+    }
+  } catch (err) {
+    console.error("❌ Error in ensureSettings:", err);
   }
 }
 
 /* ========================
-   START SERVER
+   INITIALIZATION & START SERVER
 ======================== */
-
-const PORT = process.env.PORT || 5001;
-
+// استدعاء الاتصال بقاعدة البيانات مباشرة ليتم حفظ الاتصال وتجاوب السيرفر بسرعة
 connectDB()
   .then(async () => {
-
-    // ✅ יצירת שעות פעילות אם לא קיימות
     await ensureSettings();
-
-    // ✅ יצירת owner אם לא קיים
     await adminController.createAdmin();
-
-    // ✅ הפעלת cron
-    cronService.start();
-
-    app.listen(PORT, () => {
-      console.log('\n💈 Fadila Barber Server Running');
-      console.log(`📍 Local: http://localhost:${PORT}`);
-      console.log(`❤️ Health: http://localhost:${PORT}/api/health\n`);
-    });
-
+    
+    // ملاحظة: الـ Cron لن يعمل بشكل مستمر على Vercel، ولكن نتركه هنا للتشغيل المحلي (Local)
+    if (process.env.NODE_ENV !== 'production') {
+      cronService.start();
+    }
   })
   .catch((err) => {
-    console.error('❌ Failed to start server:', err);
+    console.error('❌ Failed to connect to DB during initialization:', err);
   });
+
+// تشغيل الـ listen فقط إذا كنا نعمل محلياً (Local Development)
+// Vercel يتكفل بتشغيل الـ app تلقائياً دون الحاجة لأمر listen ثابت
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => {
+    console.log(`\n💈 Fadila Barber Server Running on port ${PORT}`);
+  });
+}
 
 /* ========================
    GRACEFUL SHUTDOWN
 ======================== */
-
 process.on('SIGINT', () => {
   console.log('\nShutting down...');
-  cronService.stop();
+  if (process.env.NODE_ENV !== 'production') cronService.stop();
   process.exit(0);
 });
 
+// 🚨 أهم سطر تم إضافته لكي ينجح الرفع على Vercel 🚨
 module.exports = app;
