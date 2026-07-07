@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function loadWorkingHours(){
-  const res = await fetch(`${API}/settings`);
+  const res = await fetch(`${API_URL}/settings`);
   const data = await res.json();
 
   const container = document.getElementById("workingHoursContainer");
@@ -385,7 +385,7 @@ async function saveWorkingHours(){
 
   });
 
-  await fetch(`${API}/settings`,{
+  await fetch(`${API_URL}/settings`,{
     method:"PUT",
     headers:{
       "Content-Type":"application/json",
@@ -401,7 +401,7 @@ async function saveWorkingHours(){
 /* SERVICES */
 
 async function loadServices(){
-  const res=await fetch(`${API}/services`);
+  const res=await fetch(`${API_URL}/services`);
   const data=await res.json();
   const tbody=document.querySelector("#servicesTable tbody");
   tbody.innerHTML="";
@@ -425,7 +425,7 @@ async function addService(){
   const price = document.getElementById("servicePriceInput").value;
   const duration = document.getElementById("serviceDurationInput").value;
 
-  await fetch(`${API}/services`,{
+  await fetch(`${API_URL}/services`,{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -438,7 +438,7 @@ async function addService(){
 }
 
 async function deleteService(id){
-  await fetch(`${API}/services/${id}`,{
+  await fetch(`${API_URL}/services/${id}`,{
     method:"DELETE",
     headers:{Authorization:`Bearer ${token}`}
   });
@@ -446,7 +446,7 @@ async function deleteService(id){
 }
 
 async function updateService(id,price,duration){
-  await fetch(`${API}/services/${id}`,{
+  await fetch(`${API_URL}/services/${id}`,{
     method:"PUT",
     headers:{
       "Content-Type":"application/json",
@@ -459,7 +459,7 @@ async function updateService(id,price,duration){
 /* APPOINTMENTS */
 
 async function loadAppointments(){
-  const res=await fetch(`${API}/appointments`);
+  const res=await fetch(`${API_URL}/appointments`);
   const data=await res.json();
   const tbody=document.querySelector("#appointmentsTable tbody");
   tbody.innerHTML="";
@@ -480,7 +480,7 @@ async function loadAppointments(){
 }
 
 async function deleteAppointment(id){
-  await fetch(`${API}/appointments/${id}`,{
+  await fetch(`${API_URL}/appointments/${id}`,{
     method:"DELETE",
     headers:{Authorization:`Bearer ${token}`}
   });
@@ -490,7 +490,7 @@ async function deleteAppointment(id){
 /* GALLERY */
 
 async function loadGallery(){
-  const res = await fetch(`${API}/gallery`);
+  const res = await fetch(`${API_URL}/gallery`);
   const images = await res.json();
 
   const container = document.getElementById("galleryContainer");
@@ -515,7 +515,7 @@ async function uploadImage(){
   const formData=new FormData();
   formData.append("image",file);
 
-  await fetch(`${API}/gallery`,{
+  await fetch(`${API_URL}/gallery`,{
     method:"POST",
     headers:{Authorization:`Bearer ${token}`},
     body:formData
@@ -525,7 +525,7 @@ async function uploadImage(){
 }
 
 async function deleteImage(id){
-  await fetch(`${API}/gallery/${id}`,{
+  await fetch(`${API_URL}/gallery/${id}`,{
     method:"DELETE",
     headers:{Authorization:`Bearer ${token}`}
   });
