@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Dashboard</title>
+
+<style>
+
+/* ===========================
+   DASHBOARD – LUXURY EDITION
+=========================== */
+
+:root {
+  --bg: #0d0d0d;
+  --card: #151515;
+  --gold: #d4af37;
+  --gold-soft: rgba(212,175,55,0.2);
+  --text: #ffffff;
+  --muted: #888;
+  --radius: 12px;
+}
+
+*{
+  box-sizing: border-box;
+}
+
+body{
+  margin:0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ================= HEADER ================= */
+
+header{
+  background: #111;
+  padding:20px 30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--gold-soft);
+}
+
+header h1{
+  margin:0;
+  font-weight:500;
+  letter-spacing:2px;
+  color: var(--gold);
+}
+
+.logout{
+  background:transparent;
+  border:1px solid var(--gold);
+  padding:8px 18px;
+  color:var(--gold);
+  cursor:pointer;
+  border-radius: var(--radius);
+  transition:0.3s ease;
+}
+
+.logout:hover{
+  background: var(--gold);
+  color:black;
+}
+
+/* ================= CONTAINER ================= */
+
+.container{
+  padding:30px;
+  max-width:1200px;
+  margin:auto;
+}
+
+/* ================= SECTIONS ================= */
+
+section{
+  background: var(--card);
+  padding:25px;
+  margin-bottom:25px;
+  border-radius: var(--radius);
+  border:1px solid var(--gold-soft);
+}
+
+section h2{
+  margin-top:0;
+  margin-bottom:15px;
+  font-weight:500;
+  color: var(--gold);
+  letter-spacing:1px;
+}
+
+/* ================= INPUTS ================= */
+
+input, select{
+  padding:10px;
+  margin:5px 5px 10px 0;
+  border-radius:6px;
+  border:1px solid #222;
+  background:#101010;
+  color:white;
+}
+
+input:focus, select:focus{
+  outline:none;
+  border-color: var(--gold);
+}
+
+/* ================= BUTTONS ================= */
+
+button{
+  padding:8px 14px;
+  margin:5px;
+  cursor:pointer;
+  border-radius:6px;
+  border:none;
+  font-weight:500;
+  transition:0.3s ease;
+}
+
+/* Primary gold button */
+button:not(.logout){
+  background: var(--gold);
+  color:black;
+}
+
+button:not(.logout):hover{
+  background:#e6c04a;
+}
+
+/* Delete button */
+button.delete-btn{
+  background:#2a0f0f;
+  color:#f44336;
+  border:1px solid #f44336;
+}
+
+button.delete-btn:hover{
+  background:#f44336;
+  color:black;
+}
+
+/* ================= TABLE ================= */
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+  font-size:14px;
+}
+
+th{
+  text-align:center;
+  padding:12px;
+  background:#111;
+  color: var(--gold);
+  border-bottom:1px solid var(--gold-soft);
+}
+
+td{
+  padding:10px;
+  text-align:center;
+  border-bottom:1px solid #222;
+}
+
+tr:hover{
+  background:#1c1c1c;
+}
+
+/* ================= GALLERY ================= */
+
+#galleryContainer{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  margin-top:15px;
+}
+
+#galleryContainer div{
+  background:#111;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid var(--gold-soft);
+  text-align:center;
+}
+
+#galleryContainer img{
+  width:140px;
+  height:140px;
+  object-fit:cover;
+  border-radius:6px;
+  transition:0.3s ease;
+}
+
+#galleryContainer img:hover{
+  transform:scale(1.05);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:768px){
+
+  .container{
+    padding:20px;
+  }
+
+  table{
+    font-size:12px;
+  }
+
+  #galleryContainer img{
+    width:100px;
+    height:100px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+<h1>💈 Owner Dashboard</h1>
+<button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+<section>
+  <h2>שעות פעילות</h2>
+  <div id="workingHoursContainer"></div>
+  <button onclick="saveWorkingHours()">שמור שינויים</button>
+</section>
+<!-- SERVICES -->
+<section>
+<h2>שירותים</h2>
+
+<input id="serviceNameInput" placeholder="שם שירות">
+<input id="servicePriceInput" type="number" placeholder="מחיר">
+<input id="serviceDurationInput" type="number" placeholder="משך בדקות">
+<button onclick="addService()">הוסף שירות</button>
+
+<table id="servicesTable">
+<thead>
+<tr>
+<th>שם</th>
+<th>מחיר</th>
+<th>מחיקה</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</section>
+
+<!-- APPOINTMENTS -->
+<section>
+<h2>תורים</h2>
+<table id="appointmentsTable">
+<thead>
+<tr>
+<th>שם</th>
+<th>טלפון</th>
+<th>שירות</th>
+<th>תאריך</th>
+<th>שעה</th>
+<th>סטטוס</th>
+<th>פעולות</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</section>
+
+<!-- GALLERY -->
+<section>
+<h2>גלריה</h2>
+
+<input type="file" id="imageInput">
+<button onclick="uploadImage()">העלה</button>
+
+<div id="galleryContainer"></div>
+</section>
+
+</div>
+
+<script>
+const API="http://localhost:5001/api";
+const token=localStorage.getItem("token");
+if(!token) window.location.href="admin.html";
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadServices();
+  loadAppointments();
+  loadGallery();
+  loadWorkingHours();
+});
+
+async function loadWorkingHours(){
+  const res = await fetch(`${API}/settings`);
+  const data = await res.json();
+
+  const container = document.getElementById("workingHoursContainer");
+  container.innerHTML = "";
+
+  const daysMap = {
+    sunday: "ראשון",
+    monday: "שני",
+    tuesday: "שלישי",
+    wednesday: "רביעי",
+    thursday: "חמישי",
+    friday: "שישי",
+    saturday: "שבת"
+  };
+
+  for(const day in data.workingHours){
+
+    const d = data.workingHours[day];
+    d.breaks = d.breaks || [];
+
+    let breaksHTML = "";
+
+    d.breaks.forEach((br, index) => {
+      breaksHTML += `
+        <div style="margin-bottom:5px;">
+          <input type="time" value="${br.start || ""}" id="${day}_breakStart_${index}">
+          -
+          <input type="time" value="${br.end || ""}" id="${day}_breakEnd_${index}">
+          <button onclick="removeBreak('${day}', ${index})">❌</button>
+        </div>
+      `;
+    });
+
+    container.innerHTML += `
+      <div style="margin-bottom:25px; padding:15px; border:1px solid #333; border-radius:10px;">
+        <strong>${daysMap[day]}</strong><br><br>
+
+        פתיחה:
+        <input type="time" value="${d.start || ""}" id="${day}_start">
+
+        סגירה:
+        <input type="time" value="${d.end || ""}" id="${day}_end">
+
+        <br><br>
+
+        <div id="${day}_breaks">
+          ${breaksHTML}
+        </div>
+
+        <button onclick="addBreak('${day}')">➕ הוסף הפסקה</button>
+
+        <br><br>
+
+        <label>
+          <input type="checkbox" ${d.enabled ? "checked":""} id="${day}_enabled">
+          פתוח
+        </label>
+      </div>
+    `;
+  }
+}
+
+async function saveWorkingHours(){
+
+  const workingHours = {};
+  const days = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+
+  days.forEach(day=>{
+
+    const breaks = [];
+    let index = 0;
+
+    while(document.getElementById(`${day}_breakStart_${index}`)){
+      breaks.push({
+        start: document.getElementById(`${day}_breakStart_${index}`).value,
+        end: document.getElementById(`${day}_breakEnd_${index}`).value
+      });
+      index++;
+    }
+
+    workingHours[day] = {
+      start: document.getElementById(`${day}_start`).value,
+      end: document.getElementById(`${day}_end`).value,
+      breaks: breaks,  // ✅ חשוב
+      enabled: document.getElementById(`${day}_enabled`).checked
+    };
+
+  });
+
+  await fetch(`${API}/settings`,{
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:`Bearer ${token}`
+    },
+    body:JSON.stringify({ workingHours })
+  });
+
+  alert("✅ נשמר בהצלחה");
+
+  loadWorkingHours();
+}
+/* SERVICES */
+
+async function loadServices(){
+  const res=await fetch(`${API}/services`);
+  const data=await res.json();
+  const tbody=document.querySelector("#servicesTable tbody");
+  tbody.innerHTML="";
+  data.forEach(s=>{
+    tbody.innerHTML+=`
+    <tr>
+      <td>${s.name}</td>
+      <td>
+        <input type="number" value="${s.price}" 
+        onchange="updateService('${s._id}',this.value)">
+      </td>
+      <td>
+        <button onclick="deleteService('${s._id}')">❌</button>
+      </td>
+    </tr>`;
+  });
+}
+
+async function addService(){
+  const name = document.getElementById("serviceNameInput").value;
+  const price = document.getElementById("servicePriceInput").value;
+  const duration = document.getElementById("serviceDurationInput").value;
+
+  await fetch(`${API}/services`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:`Bearer ${token}`
+    },
+    body:JSON.stringify({ name, price, duration })
+  });
+
+  loadServices();
+}
+
+async function deleteService(id){
+  await fetch(`${API}/services/${id}`,{
+    method:"DELETE",
+    headers:{Authorization:`Bearer ${token}`}
+  });
+  loadServices();
+}
+
+async function updateService(id,price,duration){
+  await fetch(`${API}/services/${id}`,{
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:`Bearer ${token}`
+    },
+    body:JSON.stringify({price, duration})
+  });
+}
+
+/* APPOINTMENTS */
+
+async function loadAppointments(){
+  const res=await fetch(`${API}/appointments`);
+  const data=await res.json();
+  const tbody=document.querySelector("#appointmentsTable tbody");
+  tbody.innerHTML="";
+  data.data.forEach(a=>{
+    tbody.innerHTML+=`
+    <tr>
+      <td>${a.customerName}</td>
+      <td>${a.customerPhone}</td>
+      <td>${a.service}</td>
+      <td>${new Date(a.date).toLocaleDateString()}</td>
+      <td>${a.time}</td>
+      <td>${a.status}</td>
+      <td>
+        <button onclick="deleteAppointment('${a._id}')">❌</button>
+      </td>
+    </tr>`;
+  });
+}
+
+async function deleteAppointment(id){
+  await fetch(`${API}/appointments/${id}`,{
+    method:"DELETE",
+    headers:{Authorization:`Bearer ${token}`}
+  });
+  loadAppointments();
+}
+
+/* GALLERY */
+
+async function loadGallery(){
+  const res = await fetch(`${API}/gallery`);
+  const images = await res.json();
+
+  const container = document.getElementById("galleryContainer");
+  container.innerHTML = "";
+
+  images.forEach(img => {
+    container.innerHTML += `
+      <div style="display:inline-block; margin:10px; text-align:center;">
+        <img 
+          src="${img.image}" 
+          style="width:140px; height:140px; object-fit:cover; border-radius:8px;"
+        >
+        <br>
+        <button onclick="deleteImage('${img._id}')">❌ מחק</button>
+      </div>
+    `;
+  });
+}
+
+async function uploadImage(){
+  const file=document.getElementById("imageInput").files[0];
+  const formData=new FormData();
+  formData.append("image",file);
+
+  await fetch(`${API}/gallery`,{
+    method:"POST",
+    headers:{Authorization:`Bearer ${token}`},
+    body:formData
+  });
+
+  loadGallery();
+}
+
+async function deleteImage(id){
+  await fetch(`${API}/gallery/${id}`,{
+    method:"DELETE",
+    headers:{Authorization:`Bearer ${token}`}
+  });
+  loadGallery();
+}
+
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="admin.html";
+}
+function addBreak(day){
+  const breaksContainer = document.getElementById(`${day}_breaks`);
+  const index = breaksContainer.children.length;
+
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <input type="time" id="${day}_breakStart_${index}">
+    -
+    <input type="time" id="${day}_breakEnd_${index}">
+    <button onclick="removeBreak('${day}', ${index})">❌</button>
+  `;
+
+  breaksContainer.appendChild(div);
+}
+function removeBreak(day, index){
+  const startInput = document.getElementById(`${day}_breakStart_${index}`);
+  if(startInput){
+    const wrapper = startInput.closest("div");
+    if(wrapper) wrapper.remove();
+  }
+}
+</script>
+
+</body>
+</html>

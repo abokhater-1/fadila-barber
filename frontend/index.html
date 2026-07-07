@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fadila Barber - זימון תורים אונליין">
+    <title>Fadila Barber - זימון תורים</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <header>
+        <button onclick="window.location.href='admin.html'" class="admin-btn">
+Owner Login
+
+</button>
+    </header>
+    <div class="container">
+        <header>
+              <a href="index.html" class="logo-link">
+    <img src="images/logo.png" alt="Fadila Barber Logo" class="logo-img">
+  </a>
+            <div class="top-actions">
+    <a href="gallery.html" class="gallery-link">גלריה</a>
+            <p class="subtitle">זימון תורים קל ומהיר</p>
+        </header>
+
+        <main>
+            <form id="bookingForm">
+                <h2>קבע תור עכשיו</h2>
+                
+                <div class="form-group">
+                    <label for="name">👤 שם מלא</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="customerName" 
+                        placeholder="שם לקוח" 
+                        required 
+                        minlength="2"
+                        autocomplete="name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">📞 טלפון</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="customerPhone" 
+                        placeholder="0501234567" 
+                        required 
+                        pattern="^05\d{8}$"
+                        autocomplete="tel"
+                    >
+                    <small>לדוגמה: 0501234567</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="service">✂️ סוג שירות</label>
+                    <select id="service" name="service" required>
+                    </select>
+                    <p id="servicePriceDisplay"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">📅 תאריך</label>
+<input type="text" id="date" name="date" required readonly>                </div>
+
+                <div class="form-group">
+                    <label for="time">🕐 שעה</label>
+                    <select id="time" name="time" required disabled>
+                        <option value="">קודם בחר תאריך</option>
+                    </select>
+                    <small id="availableMessage"></small>
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    📅 קבע תור
+                </button>
+
+                <div id="messageBox"></div>
+            </form>
+
+            <div class="info-box">
+
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2024 Fadila Barber - כל הזכויות שמורות</p>
+        </footer>
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/he.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

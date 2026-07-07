@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+
+<title>Owner Login</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#111,#333);
+  color:white;
+}
+/* ================= LOGIN WRAPPER ================= */
+
+.login-wrapper{
+  display:flex;
+  justify-content:center;
+  margin-top:40px;
+}
+
+/* ================= LOGIN BOX ================= */
+
+.login-box{
+  background:#1e1e1e;
+  padding:40px;
+  border-radius:10px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 0 20px rgba(0,0,0,0.6);
+}
+
+h2{
+  margin-bottom:20px;
+}
+
+/* ================= INPUTS & BUTTON ================= */
+
+input,
+button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:6px;
+  font-size:14px;
+}
+
+input{
+  border:none;
+}
+
+button{
+  border:none;
+  background:#c8a97e;
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+button:hover{
+  background:#d4af37;
+}
+
+/* ================= MESSAGE ================= */
+
+.message{
+  margin-top:15px;
+  padding:8px;
+  border-radius:5px;
+  font-size:14px;
+  display:none;
+}
+
+.message.error{
+  background:#2a0f0f;
+  color:#f44336;
+  border:1px solid #f44336;
+}
+
+.message.success{
+  background:#0f2a14;
+  color:#4caf50;
+  border:1px solid #4caf50;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <a href="index.html" class="logo-link">
+    <img src="images/logo.png" alt="Fadila Barber Logo" class="logo-img">
+  </a>
+</header>
+
+<div class="login-wrapper">
+  <div class="login-box">
+    <h2>🔐 Owner Login</h2>
+
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <div id="loginMessage" class="message"></div>
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:5001/api";
+
+async function login(){
+
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const messageBox = document.getElementById("loginMessage");
+
+  messageBox.style.display = "none";
+  messageBox.className = "message";
+
+  if(!username || !password){
+    showMessage("יש להזין שם משתמש וסיסמה", "error");
+    return;
+  }
+
+  try{
+    const res = await fetch(`${API}/admin/login`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({username,password})
+    });
+
+    const data = await res.json();
+
+    if(res.ok && data.token){
+      showMessage("✅ התחברות מוצלחת", "success");
+      localStorage.setItem("token",data.token);
+
+      setTimeout(()=>{
+        window.location.href="dashboard.html";
+      },1000);
+
+    } else {
+      showMessage("❌ שם משתמש או סיסמה שגויים", "error");
+    }
+
+  }catch(err){
+    showMessage("שגיאת חיבור לשרת", "error");
+  }
+}
+
+function showMessage(text,type){
+  const messageBox = document.getElementById("loginMessage");
+  messageBox.textContent = text;
+  messageBox.classList.add(type);
+  messageBox.style.display = "block";
+}
+</script>
+
+</body>
+</html>
