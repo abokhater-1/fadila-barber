@@ -120,23 +120,22 @@ async function ensureSettings() {
 ======================== */
 const PORT = process.env.PORT || 5001;
 
-connectDB()
-  .then(async () => {
-    await ensureSettings();
-    await adminController.createAdmin();
-    
-    // تشغيل الـ Cron Service (ستعمل الآن 24/7 بنجاح على Render!)
-    cronService.start();
-
-    // تشغيل السيرفر لفتح المنفذ (إلزامي لـ Render والـ Local)
-    app.listen(PORT, () => {
-      console.log(`\n💈 Fadila Barber Server Running on port ${PORT}`);
+// 1. تشغيل السيرفر فوراً دون انتظار أي شيء ليرى Render أن المنفذ مفتوح وجاهز
+app.listen(PORT, () => {
+  console.log(`\n💈 Fadila Barber Server Running on port ${PORT}`);
+  
+  // 2. تشغيل الاتصال والعمليات الخلفية بالتوازي بعد أن فتحنا المنفذ بنجاح
+  connectDB()
+    .then(async () => {
+      await ensureSettings();
+      await adminController.createAdmin();
+      cronService.start();
+      console.log('✅ Background initialization completed successfully');
+    })
+    .catch((err) => {
+      console.error('❌ Failed to connect to DB during initialization:', err);
     });
-  })
-  .catch((err) => {
-    console.error('❌ Failed to connect to DB during initialization:', err);
-  });
-
+});
 /* ========================
    GRACEFUL SHUTDOWN
 ======================== */
